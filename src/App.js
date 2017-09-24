@@ -1,27 +1,26 @@
 import React, { Component } from 'react';
 import './App.css';
 
-const list = [
-  {
-    title: 'React',
-    url: 'https://facebook.github.io/react/',
-    author: 'Jordan Walke',
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: 'Redux',
-    url: 'https://github.com/reactjs/redux',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
+const DEFAULT_QUERY = 'redux';
+
+const PATH_BASE = 'https://hn.algolia.com/api/v1';
+const PATH_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
 
 const isSearched = (searchTerm) => (item) => 
     !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
+
+const styles = {
+  largeColumn: {
+    width: '40%',
+  },
+  midColumn: {
+    width: '30%',
+  },  
+  smallColumn: {
+    width: '10%',
+  },
+}
 
 class App extends Component {
 
@@ -29,12 +28,29 @@ class App extends Component {
     super(props);
     
     this.state = {
-      list: list,
-      searchTerm: '',
+      result: null,
+      searchTerm: DEFAULT_QUERY,
     };
 
+    this.setSearchTopstories = this.setSearchTopstories.bind(this);
+    this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
+  }
+
+  setSearchTopstories(result){
+    this.setState({ result });
+  }
+
+  fetchSearchTopstories(searchTerm){
+    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+      .then(response => response.json())
+      .then(result => this.setSearchTopstories(result));
+  }
+
+  componentDidMount(){
+    const { searchTerm } = this.state;
+    this.fetchSearchTopstories(searchTerm);
   }
 
   onSearchChange(event){
@@ -43,42 +59,86 @@ class App extends Component {
 
   onDismiss(id){
     const isNotId = item => item.objectID !== id;
-    const updatedList = this.state.list.filter(isNotId);
-    this.setState({ list: updatedList });
+    const updatedHits = this.state.result.hits.filter(isNotId);
+    this.setState({ 
+    result: { ...this.state.result, hits: updatedHits } 
+    });
   }
 
 
   render() {
-    const { searchTerm, list } = this.state;
+    const { searchTerm, result } = this.state;
+
     return (
-      <div className="App">     
-        <form action="">
-            <input 
-            type="text"
+      <div className="page">
+        <div className="interactions">
+          <Search 
+            value={searchTerm}
             onChange={this.onSearchChange}
-            />
-          </form>  
-          {list.filter(isSearched(searchTerm)).map(item => 
-              <div key={item.objectID}>
-                <span>
-                  <a href={item.url}>{item.title}</a>
-                </span>
-                <span>{item.author}</span>
-                <span>{item.num_comments}</span>
-                <span>{item.points}</span>
-                <span>
-                  <button
-                  onClick={() => this.onDismiss(item.objectID)}
-                  type="button"
-                  >
-                  Dismiss
-                  </button>
-                </span>
-              </div>
-          )}
+          >Search
+          </Search>
+        </div>
+        { result &&
+         <Table 
+           list={result.hits}
+           pattern={searchTerm}
+           onDismiss={this.onDismiss}
+         />
+        }     
       </div>
     );
   }
 }
+
+const Search = ({ value, onChange, children }) =>
+  <form>
+  {children}
+    <input 
+      type="text"
+      value={value}
+      onChange={onChange}
+      />
+  </form>
+
+const Table = ({ list, pattern, onDismiss }) =>
+  <div className="table">
+    { list.filter(isSearched(pattern)).map(item=>
+    <div key={item.objectID} className="table-row">
+
+      <span style={styles.largeColumn}>
+        <a href={item.url}>{item.title}</a>
+      </span>
+
+      <span style={styles.midColumn}>
+        {item.author}
+      </span>
+
+      <span style={styles.smallColumn}>
+        {item.num_comments}
+      </span>
+
+      <span style={styles.smallColumn}>
+        {item.points}
+      </span>
+      
+      <span style={styles.smallColumn}>
+        <Button 
+          onClick={() => onDismiss(item.objectID)}
+          className="button-inline">
+          Dismiss
+        </Button>
+      </span>
+    </div>
+      )}
+  </div>
+
+const Button = ({ onClick, className = '', children }) =>
+  <button
+    onClick={onClick}
+    className={className}
+    type="button"
+  >
+    {children}
+  </button>
 
 export default App;
