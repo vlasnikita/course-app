@@ -1,27 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import './App.css';
 
-const DEFAULT_QUERY = 'redux';
-const DEFAULT_PAGE = 0;
-const DEFAULT_HPP = '15';
-
-const PATH_BASE = 'https://hn.algolia.com/api/v1';
-const PATH_SEARCH = '/search';
-const PARAM_SEARCH = 'query=';
-const PARAM_PAGE = 'page=';
-const PARAM_HPP = 'hitsPerPage=';
-
-const styles = {
-  largeColumn: {
-    width: '40%',
-  },
-  midColumn: {
-    width: '25%',
-  },
-  smallColumn: {
-    width: '10%',
-  },
-}
+import {
+  DEFAULT_QUERY,
+  DEFAULT_PAGE,
+  DEFAULT_HPP,
+  PATH_BASE,
+  PATH_SEARCH,
+  PARAM_SEARCH,
+  PARAM_PAGE,
+  PARAM_HPP,
+  STYLES,
+} from '../constants';
 
 class App extends Component {
 
@@ -167,22 +157,22 @@ const Table = ({ list, onDismiss }) =>
   <div className="table">
     { list.map(item =>
     <div key={item.objectID} className="table-row">
-      <span style={styles.largeColumn}>
+      <span style={STYLES.largeColumn}>
         <a href={item.url}>{item.title}</a>
       </span>
-      <span style={styles.smallColumn}>
+      <span style={STYLES.smallColumn}>
         {item.author}
       </span>
-      <span style={styles.largeColumn}>
+      <span style={STYLES.largeColumn}>
         {item.url}
       </span>
-      <span style={styles.smallColumn}>
+      <span style={STYLES.smallColumn}>
         {item.num_comments}
       </span>
-      <span style={styles.smallColumn}>
+      <span style={STYLES.smallColumn}>
         {item.points}
       </span>
-      <span style={styles.smallColumn}>
+      <span style={STYLES.smallColumn}>
         <Button
           onClick={() => onDismiss(item.objectID)}
           className="button-inline">
@@ -193,7 +183,7 @@ const Table = ({ list, onDismiss }) =>
       )}
   </div>
 
-const Button = ({ onClick, className = '', children }) =>
+const Button = ({ onClick, className, children }) =>
   <button
     onClick={onClick}
     className={className}
@@ -202,4 +192,39 @@ const Button = ({ onClick, className = '', children }) =>
     {children}
   </button>
 
+Button.defaultProps = {
+  className: '',
+}
+Button.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+};
+
+Table.propTypes = {
+  list: PropTypes.arrayOf(
+    PropTypes.shape({
+      objectID: PropTypes.string.isRequired,
+      author: PropTypes.string,
+      url: PropTypes.string,
+      num_comments: PropTypes.number,
+      points: PropTypes.number,
+    })
+  ).isRequired,
+  onDismiss: PropTypes.func.isRequired,
+};
+
+Search.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
+}
+
 export default App;
+
+export {
+  Button,
+  Search,
+  Table,
+};
