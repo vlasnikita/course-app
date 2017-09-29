@@ -22,6 +22,7 @@ class App extends Component {
       results: null,
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      isLoading: false,
     };
 
     this.needToSearchTopstories = this.needToSearchTopstories.bind(this);
@@ -47,14 +48,18 @@ class App extends Component {
       ...hits
     ];
 
-    this.setState({ results: {
+    this.setState({ 
+      results: {
       ...results,
       [searchKey]: { hits: updatedHits, page }
-    }
+    },
+      isLoading: false
   });
 }
 
   fetchSearchTopstories(searchTerm, page){
+    this.setState({isLoading: true});
+
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));
@@ -97,7 +102,8 @@ class App extends Component {
     const {
       searchTerm,
       searchKey,
-      results
+      results,
+      isLoading
     } = this.state;
 
     const page = (
@@ -127,31 +133,47 @@ class App extends Component {
            onDismiss={this.onDismiss}
          />
         <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
-            More
-          </Button>
+        <ButtonWithLoading
+          isLoading={isLoading}
+          onClick={() => this.fetchSearchTopstories(searchKey, page+1)}>
+        </ButtonWithLoading>
         </div>
       </div>
     );
   }
 }
 
-const Search = ({
-  value,
-  onChange,
-  onSubmit,
-  children
-}) =>
-  <form onSubmit={onSubmit}>
-    <input
-      type="text"
-      value={value}
-      onChange={onChange}
-      />
-      <button type="submit">
-        {children}
-      </button>
-  </form>
+class Search extends Component {
+
+  componentDidMount(){
+    this.input.focus();
+  }
+
+  render(){
+    const {
+      value,
+      onChange,
+      onSubmit,
+      children
+    } = this.props;
+
+    return(
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          value={value}
+          onChange={onChange}
+          ref={(node) => {this.input = node; }}
+          />
+          <button type="submit">
+            {children}
+          </button>
+      </form>
+    );
+  }
+}
+
+const Loading =()=> <div>Loading...</div>
 
 const Table = ({ list, onDismiss }) =>
   <div className="table">
@@ -191,6 +213,11 @@ const Button = ({ onClick, className, children }) =>
   >
     {children}
   </button>
+
+const withLoading = (Component) => ( {isLoading, ...rest} ) => 
+  isLoading ? <Loading /> : <Component { ...rest} />;
+
+const ButtonWithLoading = withLoading(Button);
 
 Button.defaultProps = {
   className: '',
