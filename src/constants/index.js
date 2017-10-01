@@ -1,4 +1,6 @@
-export const DEFAULT_QUERY = 'redux';
+import { sortBy } from 'lodash';
+
+export const DEFAULT_QUERY = '';
 export const DEFAULT_PAGE = 0;
 export const DEFAULT_HPP = '15';
 
@@ -12,10 +14,15 @@ export const STYLES = {
   largeColumn: {
     width: '40%',
   },
-  midColumn: {
-    width: '25%',
-  },
   smallColumn: {
     width: '10%',
   },
 };
+ export const SORTS = {
+ 	NONE: list => list,
+ 	TITLE: list => sortBy(list, 'title'),
+ 	AUTHOR: list => sortBy(list, 'author'),
+ 	URL: list => sortBy(list, 'url'),
+ 	COMMENTS: list => sortBy(list, 'num_comments').reverse(),
+ 	POINTS: list => sortBy(list, 'points').reverse(),
+ }
