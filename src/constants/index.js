@@ -1,6 +1,6 @@
 import { sortBy } from 'lodash';
 
-export const DEFAULT_QUERY = '';
+export const DEFAULT_QUERY = 'react';
 export const DEFAULT_PAGE = 0;
 export const DEFAULT_HPP = '15';
 
