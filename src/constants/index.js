@@ -10,6 +10,10 @@ export const PARAM_SEARCH = 'query=';
 export const PARAM_PAGE = 'page=';
 export const PARAM_HPP = 'hitsPerPage=';
 
+// CUSTOM
+export const PATH_RSS = 'http://habrahabr.ru/rss/interesting/';
+// CUSTOM
+
 export const STYLES = {
   largeColumn: {
     width: '40%',

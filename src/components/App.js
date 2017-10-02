@@ -11,10 +11,11 @@ import {
   PARAM_PAGE,
   PARAM_HPP,
   STYLES,
-  SORTS
+  SORTS,
+  PATH_RSS
 } from '../constants';
 
-const updateSearchTopstories= (hits,page) => (prevState) =>{
+const updateSearchTopstories = (hits,page) => (prevState) =>{
   const {searchKey, results} = prevState;
 
   const oldHits = results && results[searchKey]
@@ -45,6 +46,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       isLoading: false,
+      listHabr: [],
     };
 
     this.needToSearchTopstories = this.needToSearchTopstories.bind(this);
@@ -53,6 +55,15 @@ class App extends Component {
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
+    this.fetchHabr = this.fetchHabr.bind(this);
+  }
+
+  fetchHabr(){
+    let result = [];
+    $.get(`${PATH_RSS}`, function(data){
+      result = $.xml2json(data);
+    });
+    this.setState({listHabr: result});
   }
 
   needToSearchTopstories(searchTerm){
@@ -79,6 +90,7 @@ class App extends Component {
     });
     const { searchTerm } = this.state;
     this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
+    this.fetchHabr();
   }
 
   onSearchChange(event){
