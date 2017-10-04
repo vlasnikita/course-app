@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import './App.css';
 import classNames from 'classnames';
+import $ from 'jquery';
 import {
   DEFAULT_QUERY,
   DEFAULT_PAGE,
@@ -12,7 +13,7 @@ import {
   PARAM_HPP,
   STYLES,
   SORTS,
-  PATH_RSS
+  PATH_SECOND
 } from '../constants';
 
 const updateSearchTopstories = (hits,page) => (prevState) =>{
@@ -46,7 +47,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       isLoading: false,
-      listHabr: [],
+      listHabr: {},
     };
 
     this.needToSearchTopstories = this.needToSearchTopstories.bind(this);
@@ -59,10 +60,12 @@ class App extends Component {
   }
 
   fetchHabr(){
-    let result = [];
+    let result = {};
     $.get(`${PATH_RSS}`, function(data){
-      result = $.xml2json(data);
+      console.log(data);
+      result = $.parseXML(data);
     });
+    console.log(result);
     this.setState({listHabr: result});
   }
 
@@ -89,8 +92,8 @@ class App extends Component {
       return { searchKey: searchTerm };
     });
     const { searchTerm } = this.state;
-    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
     this.fetchHabr();
+    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
   }
 
   onSearchChange(event){
