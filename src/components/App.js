@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import './App.css';
 import classNames from 'classnames';
-import $ from 'jquery';
 import {
   DEFAULT_QUERY,
   DEFAULT_PAGE,
@@ -13,7 +12,7 @@ import {
   PARAM_HPP,
   STYLES,
   SORTS,
-  PATH_SECOND
+  PATH_RSS
 } from '../constants';
 
 const updateSearchTopstories = (hits,page) => (prevState) =>{
@@ -47,7 +46,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       isLoading: false,
-      listHabr: {},
+      meduza: null
     };
 
     this.needToSearchTopstories = this.needToSearchTopstories.bind(this);
@@ -56,17 +55,19 @@ class App extends Component {
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
-    this.fetchHabr = this.fetchHabr.bind(this);
+    this.fetchMeduza = this.fetchMeduza.bind(this);
+    this.setMeduza = this.setMeduza.bind(this);
   }
 
-  fetchHabr(){
-    let result = {};
-    $.get(`${PATH_RSS}`, function(data){
-      console.log(data);
-      result = $.parseXML(data);
-    });
-    console.log(result);
-    this.setState({listHabr: result});
+  fetchMeduza(){
+    fetch(`${PATH_RSS}`)
+    .then(response => response.json())
+    .then(result => this.setMeduza(result));
+  }
+
+  setMeduza(result){
+    const {documents} = result
+    this.setState({meduza: Object.values(documents)});
   }
 
   needToSearchTopstories(searchTerm){
@@ -92,7 +93,7 @@ class App extends Component {
       return { searchKey: searchTerm };
     });
     const { searchTerm } = this.state;
-    this.fetchHabr();
+    this.fetchMeduza();
     this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
   }
 
@@ -129,6 +130,7 @@ class App extends Component {
       searchKey,
       results,
       isLoading,
+      meduza,
     } = this.state;
 
     const page = (
@@ -143,8 +145,19 @@ class App extends Component {
       results[searchKey].hits
     ) || [];
 
+    const meduzaList = meduza || [];
+
     return (
       <div className="page">
+        <div className="interactions">
+          <div className="table">
+            <Table
+              list={meduzaList}
+              onDismiss={this.onDismiss}
+              isMeduza={true}
+              />
+          </div>
+        </div>
         <div className="interactions">
           <Search
             value={searchTerm}
@@ -156,6 +169,7 @@ class App extends Component {
          <Table
            list={list}
            onDismiss={this.onDismiss}
+           isMeduza={false}
          />
         <div className="interactions">
         <ButtonWithLoading
@@ -221,7 +235,8 @@ class Table extends Component{
   render(){
     const{
       list,
-      onDismiss
+      onDismiss,
+      isMeduza
     } = this.props;
 
     const{
@@ -233,8 +248,29 @@ class Table extends Component{
     const reverseSortedList = isSortReverse
       ? sortedList.reverse()
       : sortedList;
-
-    return (
+    if(isMeduza){
+      return(
+        <div className="table">
+          { list.map(item=>
+            <div className="table-row">
+            <span style={STYLES.smallColumn}>
+              {item.pub_date}
+            </span>
+              <span>
+                <a href={`https://meduza.io/${item.url}`}>
+                  <img
+                    style={STYLES.image}
+                    src={`https://meduza.io${item.image.large_url}`}
+                    alt={item.title}
+                  />
+                    {item.title}
+                  </a>
+              </span>
+            </div>
+          )}
+        </div>
+      );
+    }else return (
     <div className="table">
         <div className="table-header">
           <span style={STYLES.largeColumn}>
