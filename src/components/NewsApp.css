@@ -1,0 +1,176 @@
+.page {
+  margin: 20px;
+}
+
+.interactions {
+  text-align: center;
+}
+
+.table {
+  margin: 20px 0;
+}
+
+.table-header {
+  display: flex;
+  line-height: 24px;
+  font-size: 16px;
+  padding: 0 10px;
+  justify-content: space-between;
+}
+
+.table-empty {
+  margin: 200px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.table-row {
+  display: flex;
+  line-height: 24px;
+  white-space: nowrap;
+  margin: 5px 0;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
+  max-height: 24px;
+}
+
+.table-header > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 5px;
+}
+
+.table-row > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 5px;
+}
+
+.button-inline {
+  border-width: 0;
+  background: transparent;
+  color: inherit;
+  text-align: inherit;
+  -webkit-font-smoothing: inherit;
+  padding: 0;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.button-active {
+  border-radius: 0;
+  border-bottom: 1px solid #38BB6C;
+}
+
+.accordion {
+  position: absolute !important;
+  background: #f12e50 !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 40% !important;
+  max-width: 30em !important;
+  min-width: 15em !important;
+  transform: translate(-50%, -50%) !important;
+  overflow: hidden !important;
+}
+
+.accordion-title {
+  color: #fff !important;
+  background: red !important;
+  text-align: center !important;
+  font-weight: 700 !important;
+  line-height: 1.2em !important;
+  padding: 1em !important;
+}
+
+.section {
+  position: relative !important;
+  width: 100% !important;
+  border-bottom: 5px solid red !important;
+  border-left: 2px solid red !important;
+  border-right: 2px solid red !important;
+}
+
+.section>button {
+  position: absolute !important;
+  right: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 3em !important;
+  width: 3em !important;
+  outline: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  text-indent: -9999% !important;
+  pointer-events: none !important;
+}
+
+.section>button:before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  height: 12px !important;
+  width: 4px !important;
+  border-radius: .3em !important;
+  background: red !important;
+  transform-origin: 50% !important;
+  top: 50% !important;
+  left: 50% !important;
+  transition: all .25s ease-in-out !important;
+  transform: translate(75%, -50%) rotate(45deg) !important;
+}
+
+.section>button:after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  height: 12px !important;
+  width: 4px !important;
+  border-radius: .3em !important;
+  background: red !important;
+  transform-origin: 50% !important;
+  top: 50% !important;
+  left: 50% !important;
+  transition: all .25s ease-in-out !important;
+  transform: translate(-75%, -50%) rotate(-45deg) !important;
+}
+
+.content-wrap {
+  height: 0 !important;
+  overflow: hidden !important;
+  transition: all .2s ease-in !important;
+}
+
+.section.open>button:before {
+  height: 14px !important;
+  transform: translate(0%, -50%) rotate(-45deg) !important;
+}
+
+.section.open>button:after {
+  height: 14px !important;
+  transform: translate(0%, -50%) rotate(45deg) !important;
+}
+
+.section.open>.content-wrap {
+    height: 120px !important;
+}
+
+.section-head {
+  width: 100% !important;
+  overflow: hidden !important;
+  background: white !important;
+  cursor: pointer !important;
+  font-weight: 700 !important;
+  color: #888 !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  padding: 1em !important;
+  padding-right: 2.1em !important;
+}
+
+.content {
+  padding: 1em !important;
+  color: #333 !important;
+  line-height: 1.3 !important;
+}

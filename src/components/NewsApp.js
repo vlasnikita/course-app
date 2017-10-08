@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import './App.css';
+import './NewsApp.css';
 import classNames from 'classnames';
 import {
   DEFAULT_QUERY,
@@ -33,10 +33,76 @@ const updateSearchTopstories = (hits,page) => (prevState) =>{
     [searchKey]: { hits: updatedHits, page }
   },
     isLoading: false
-};
+  };
 };
 
-class App extends Component {
+const NewsApp = () => {
+  return(
+    <div>
+      <Accordion title="MyFeed" />
+    </div>
+  )
+}
+
+const Accordion =({title})=> {
+  return(
+    <div className="accordion">
+      <div className="accordion-title">{title}</div>
+      <Section title="Meduza Feed">
+        <NewsFeed meduza={true} />
+      </Section>
+      <Section title="Hacker News">
+        <NewsFeed meduza={false} />
+      </Section>
+    </div>
+  );
+}
+
+class Section extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      open: false,
+      class: "section"
+    }
+    this.handleClick=this.handleClick.bind(this);
+  }
+
+  handleClick(){
+    if(this.state.open) {
+      this.setState({
+        open: false,
+        class: "section"
+      });
+    }else {
+      this.setState({
+        open: true,
+        class: "section section-open"
+      });
+    }
+  }
+
+  render() {
+    return (
+      <div className={this.state.class}>
+        <button>toggle</button>
+        <div
+          className="section-head"
+          onClick={this.handleClick}
+            >
+        {this.props.title}
+        </div>
+        <div className="content-wrap">
+          <div className="content">
+            {this.props.children}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+class NewsFeed extends Component {
 
   constructor(props){
     super(props);
@@ -46,7 +112,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       isLoading: false,
-      meduza: null
+      meduza: this.props.meduza
     };
 
     this.needToSearchTopstories = this.needToSearchTopstories.bind(this);
@@ -340,7 +406,12 @@ class Table extends Component{
         { reverseSortedList.map(item =>
         <div key={item.objectID} className="table-row">
           <span style={STYLES.largeColumn}>
-            <a href={item.url}>{item.title}</a>
+            <a
+              href={item.url}
+              target="_blank"
+            >
+            {item.title}
+            </a>
           </span>
           <span style={STYLES.smallColumn}>
             {item.author}
@@ -432,7 +503,7 @@ Search.propTypes = {
   children: PropTypes.node.isRequired,
 }
 
-export default App;
+export default NewsApp;
 
 export {
   Button,
