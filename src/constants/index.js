@@ -21,8 +21,11 @@ export const STYLES = {
   smallColumn: {
     width: '10%',
   },
+  xSmallColumn: {
+    width: '5%',
+  },
   image: {
-    width: '150px',
+    width: '50px',
   },
 };
  export const SORTS = {

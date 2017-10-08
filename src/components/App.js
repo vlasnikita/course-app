@@ -251,20 +251,37 @@ class Table extends Component{
     if(isMeduza){
       return(
         <div className="table">
+          <div className="table-header">
+            <span style={STYLES.smallColumn}>
+            Date
+            </span>
+            <span style={STYLES.xSmallColumn}>
+            </span>
+            <span style={STYLES.largeColumn}>
+            Title
+            </span>
+            <span style={STYLES.largeColumn}>
+            </span>
+          </div>
           { list.map(item=>
             <div className="table-row">
-            <span style={STYLES.smallColumn}>
-              {item.pub_date}
-            </span>
+              <span style={STYLES.smallColumn}>
+                {item.pub_date}
+              </span>
+              <span style={STYLES.xSmallColumn}>
+                <img
+                  style={STYLES.image}
+                  src={`https://meduza.io${item.image.large_url}`}
+                  alt={item.title}
+                />
+              </span>
               <span>
-                <a href={`https://meduza.io/${item.url}`}>
-                  <img
-                    style={STYLES.image}
-                    src={`https://meduza.io${item.image.large_url}`}
-                    alt={item.title}
-                  />
+                <a
+                  href={`https://meduza.io/${item.url}`}
+                  target="_blank"
+                  >
                     {item.title}
-                  </a>
+                </a>
               </span>
             </div>
           )}
