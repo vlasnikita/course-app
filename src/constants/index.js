@@ -11,7 +11,7 @@ export const PARAM_PAGE = 'page=';
 export const PARAM_HPP = 'hitsPerPage=';
 
 // CUSTOM
-export const PATH_RSS = 'https://meduza.io/api/v3/search?chrono=articles&page=0&per_page=10&locale=ru';
+export const PATH_MEDUZA = 'https://meduza.io/api/v3/search?chrono=articles&page=0&per_page=10&locale=ru';
 // CUSTOM
 
 export const STYLES = {

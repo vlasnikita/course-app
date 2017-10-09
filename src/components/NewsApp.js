@@ -12,7 +12,7 @@ import {
   PARAM_HPP,
   STYLES,
   SORTS,
-  PATH_RSS
+  PATH_MEDUZA
 } from '../constants';
 
 const updateSearchTopstories = (hits,page) => (prevState) =>{
@@ -41,21 +41,26 @@ const NewsApp = () => {
     <div>
       <Accordion title="MyFeed" />
     </div>
-  )
+  );
 }
 
-const Accordion =({title})=> {
-  return(
-    <div className="accordion">
-      <div className="accordion-title">{title}</div>
-      <Section title="Meduza Feed">
-        <NewsFeed meduza={true} />
-      </Section>
-      <Section title="Hacker News">
-        <NewsFeed meduza={false} />
-      </Section>
-    </div>
-  );
+class Accordion extends Component {
+  render() {
+    return(
+      <div className="accordion">
+        <div className="accordion-title">{this.props.title}</div>
+        <Section title="Meduza Feed">
+          <MeduzaFeed />
+        </Section>
+        <Section
+          title="Hacker News"
+          className="section-last"
+          >
+          <HackerNewsFeed />
+        </Section>
+      </div>
+    );
+  }
 }
 
 class Section extends Component {
@@ -85,7 +90,7 @@ class Section extends Component {
   render() {
     return (
       <div className={this.state.class}>
-        <button>toggle</button>
+        <button></button>
         <div
           className="section-head"
           onClick={this.handleClick}
@@ -102,8 +107,50 @@ class Section extends Component {
   }
 }
 
-class NewsFeed extends Component {
+class MeduzaFeed extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      results: null
+    }
+    this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
+    this.setSearchTopstories = this.setSearchTopstories.bind(this);
+  }
 
+  fetchSearchTopstories() {
+    fetch(`${PATH_MEDUZA}`)
+      .then(response => response.json())
+      .then(result => this.setSearchTopstories(result));
+  }
+
+  setSearchTopstories(result) {
+    const {documents} = result;
+    this.setState({results: Object.values(documents)});
+  }
+
+  componentDidMount() {
+    this.fetchSearchTopstories();
+  }
+
+  render() {
+    const list = this.state.results || [];
+
+    return(
+      <div className="page">
+        <div className="interactions">
+          <div className="table">
+            <Table
+              list={list}
+              isMeduza={true}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+class HackerNewsFeed extends Component {
   constructor(props){
     super(props);
 
@@ -111,8 +158,7 @@ class NewsFeed extends Component {
       results: null,
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
-      isLoading: false,
-      meduza: this.props.meduza
+      isLoading: false
     };
 
     this.needToSearchTopstories = this.needToSearchTopstories.bind(this);
@@ -121,19 +167,6 @@ class NewsFeed extends Component {
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
-    this.fetchMeduza = this.fetchMeduza.bind(this);
-    this.setMeduza = this.setMeduza.bind(this);
-  }
-
-  fetchMeduza(){
-    fetch(`${PATH_RSS}`)
-    .then(response => response.json())
-    .then(result => this.setMeduza(result));
-  }
-
-  setMeduza(result){
-    const {documents} = result
-    this.setState({meduza: Object.values(documents)});
   }
 
   needToSearchTopstories(searchTerm){
@@ -159,7 +192,6 @@ class NewsFeed extends Component {
       return { searchKey: searchTerm };
     });
     const { searchTerm } = this.state;
-    this.fetchMeduza();
     this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
   }
 
@@ -196,7 +228,6 @@ class NewsFeed extends Component {
       searchKey,
       results,
       isLoading,
-      meduza,
     } = this.state;
 
     const page = (
@@ -211,19 +242,8 @@ class NewsFeed extends Component {
       results[searchKey].hits
     ) || [];
 
-    const meduzaList = meduza || [];
-
     return (
       <div className="page">
-        <div className="interactions">
-          <div className="table">
-            <Table
-              list={meduzaList}
-              onDismiss={this.onDismiss}
-              isMeduza={true}
-              />
-          </div>
-        </div>
         <div className="interactions">
           <Search
             value={searchTerm}
@@ -235,7 +255,6 @@ class NewsFeed extends Component {
          <Table
            list={list}
            onDismiss={this.onDismiss}
-           isMeduza={false}
          />
         <div className="interactions">
         <ButtonWithLoading
@@ -288,6 +307,7 @@ class Table extends Component{
     this.state = {
       sortKey: 'NONE',
       isSortReverse: false,
+      isMeduza: this.props.isMeduza
     };
 
     this.onSort = this.onSort.bind(this);
@@ -301,13 +321,13 @@ class Table extends Component{
   render(){
     const{
       list,
-      onDismiss,
-      isMeduza
+      onDismiss
     } = this.props;
 
     const{
       sortKey,
-      isSortReverse
+      isSortReverse,
+      isMeduza
     } = this.state;
 
     const sortedList = SORTS[sortKey](list);
