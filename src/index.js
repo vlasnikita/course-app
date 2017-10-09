@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './components/App';
+import NewsApp from './components/NewsApp';
 
 ReactDOM.render(
-	<App />,
+	<NewsApp />,
 	document.getElementById('root')
 	);
 
